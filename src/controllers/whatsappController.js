@@ -1,6 +1,5 @@
 // src/controllers/whatsappController.js
 
-const { sendText } = require("../services/whatsappApi");
 const { getOrCreateSession } = require("../services/sessionService");
 const greetingFlow = require("../flows/greetingFlow");
 const actionRouter = require("../flows/actionRouter");
