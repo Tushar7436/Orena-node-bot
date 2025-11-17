@@ -11,7 +11,7 @@ module.exports = {
   async sendLoggedInMenu(phone, user) {
     const sections = [
       {
-        title: `Welcome ${user.name}`,
+        title: `Welcome Student`,
         rows: [
           { id: "browse_courses", title: "Browse Courses" },
           { id: "your_purchase", title: "Your Purchases" },
