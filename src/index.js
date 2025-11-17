@@ -10,6 +10,7 @@ app.use(express.json());
 
 app.use('/webhook', webhookRoute);
 app.use("/api", require("./routes/razorpay"));
+app.use("/api/payment", require("./routes/payment"));
 
 // root
 app.get('/', (req, res) => res.send('Orenna WhatsApp Bot is running'));

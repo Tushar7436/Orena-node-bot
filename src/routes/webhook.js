@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
   const challenge = req.query['hub.challenge'];
 
   if (!mode || !token) {
-    return res.sendStatus(403);   // <--- FIX
+    return res.sendStatus(403);   
   }
 
   if (mode === "subscribe" && token === process.env.WHATSAPP_VERIFY_TOKEN) {
