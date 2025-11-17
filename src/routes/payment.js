@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const { sendText } = require("../services/WhatsappApi");
-const { enrollUserInCourse } = require("../models/queries");
 
 router.post("/success", async (req, res) => {
   try {
@@ -16,16 +15,7 @@ router.post("/success", async (req, res) => {
 
     console.log("PAYMENT SUCCESS DATA:", req.body);
 
-    // 1. Store the purchase in DB
-    await enrollUserInCourse({
-      phone,
-      course_id,
-      order_id,
-      payment_id,
-      amount
-    });
-
-    // 2. Send WhatsApp confirmation
+    // Send WhatsApp confirmation
     await sendText(
       phone,
       `🎉 *Payment Successful!*\n\n` +
