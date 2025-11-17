@@ -6,8 +6,6 @@ router.post("/success", async (req, res) => {
   try {
     const {
       phone,
-      course_id,
-      course_name,
       order_id,
       payment_id,
       amount
@@ -19,12 +17,10 @@ router.post("/success", async (req, res) => {
     await sendText(
       phone,
       `🎉 *Payment Successful!*\n\n` +
-      `You are now enrolled in:\n` +
-      `📘 *${course_name}*\n\n` +
       `🧾 *Order ID:* ${order_id}\n` +
       `💳 *Payment ID:* ${payment_id}\n` +
       `💰 *Amount Paid:* ₹${amount / 100}\n\n` +
-      `You will receive course access shortly!`
+      `You will receive course details and access shortly!`
     );
 
     return res.status(200).json({ status: "ok" });
