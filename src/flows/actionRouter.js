@@ -6,7 +6,7 @@ const newUserMenuFlow = require("./newUserMenuFlow");
 const courseFlow = require("./courseFlow");
 const paymentFlow = require("./paymentFlow");
 const { findStudentByPhone } = require("../models/queries");
-const Flow = require("../services/flowstate");
+const Flow = require("../services/flowState");
 
 module.exports = async function actionRouter(id, phone, session) {
   const user = await findStudentByPhone(phone);

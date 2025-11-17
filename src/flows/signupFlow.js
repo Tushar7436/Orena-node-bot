@@ -1,6 +1,6 @@
 const { sendText } = require("../services/WhatsappApi");
 const { createStudent } = require("../models/queries");
-const Flow = require("../services/flowstate");
+const Flow = require("../services/flowState");
 
 module.exports = async function signupFlow(phone, text) {
   const state = Flow.get(phone);
