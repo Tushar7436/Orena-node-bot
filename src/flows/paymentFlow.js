@@ -1,6 +1,6 @@
 // src/flows/paymentFlow.js
 
-const { sendText } = require("../services/whatsappApi");
+const { sendText } = require("../services/WhatsappApi");
 const { getCourseById } = require("../models/queries");
 const Razorpay = require("razorpay");
 

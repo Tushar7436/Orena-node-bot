@@ -1,6 +1,6 @@
 // src/flows/newUserMenuFlow.js
 
-const { sendList } = require("../services/whatsappApi");
+const { sendList } = require("../services/WhatsappApi");
 
 module.exports = {
   async sendNewUserMenu(phone) {

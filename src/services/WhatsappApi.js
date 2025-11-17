@@ -1,5 +1,6 @@
-// src/services/whatsappApi.js
+// src/services/WhatsappApi.js
 const axios = require('axios');
+
 
 const PHONE_ID = process.env.WHATSAPP_PHONE_ID;
 const TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;

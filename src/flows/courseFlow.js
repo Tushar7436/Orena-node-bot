@@ -1,6 +1,6 @@
 // src/flows/courseFlow.js
 
-const { sendList, sendButtons, sendText } = require("../services/whatsappApi");
+const { sendList, sendButtons, sendText } = require("../services/WhatsappApi");
 const { getAllCourses, getCourseById } = require("../models/queries");
 
 module.exports = {

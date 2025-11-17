@@ -1,4 +1,4 @@
-const { sendText } = require("../services/whatsappApi");
+const { sendText } = require("../services/WhatsappApi");
 const { createStudent } = require("../models/queries");
 const Flow = require("../services/flowstate");
 

@@ -1,6 +1,6 @@
 // src/ai/aiFallback.js
 
-const { sendText } = require("../services/whatsappApi");
+const { sendText } = require("../services/WhatsappApi");
 const axios = require("axios");
 
 module.exports = async function aiFallback(phone, userMessage, session) {

@@ -1,6 +1,6 @@
 // src/flows/actionRouter.js
 
-const { sendText } = require("../services/whatsappApi");
+const { sendText } = require("../services/WhatsappApi");
 const loggedInMenuFlow = require("./loggedInMenuFlow");
 const newUserMenuFlow = require("./newUserMenuFlow");
 const courseFlow = require("./courseFlow");

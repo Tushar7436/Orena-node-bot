@@ -1,6 +1,6 @@
 // src/flows/loggedInMenuFlow.js
 
-const { sendList, sendText } = require("../services/whatsappApi");
+const { sendList, sendText } = require("../services/WhatsappApi");
 const { getUserPurchases } = require("../models/queries");
 
 module.exports = {
