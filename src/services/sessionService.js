@@ -1,4 +1,4 @@
-const sessionModel = require("../models/sessionmodel");
+const sessionModel = require("../models/sessionModel");
 
 exports.getOrCreateSession = async (phone) => {
   // Check active session
