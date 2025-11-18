@@ -1,4 +1,4 @@
-// src/app.js
+// src/index.js
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -11,6 +11,7 @@ app.use(express.json());
 app.use('/webhook', webhookRoute);
 app.use("/api", require("./routes/razorpay"));
 app.use("/api/payment", require("./routes/payment"));
+
 
 // root
 app.get('/', (req, res) => res.send('Orenna WhatsApp Bot is running'));

@@ -2,26 +2,20 @@ const express = require("express");
 const router = express.Router();
 const { sendText } = require("../services/WhatsappApi");
 
-router.post("/success", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const {
-      phone,
-      order_id,
-      payment_id,
-      amount
-    } = req.body;
+    const { phone, order_id, payment_id, amount } = req.body;
 
-    console.log("PAYMENT SUCCESS DATA:", req.body);
-
-    // Send WhatsApp confirmation
-    await sendText(
-      phone,
+    const text =
       `🎉 *Payment Successful!*\n\n` +
       `🧾 *Order ID:* ${order_id}\n` +
       `💳 *Payment ID:* ${payment_id}\n` +
       `💰 *Amount Paid:* ₹${amount / 100}\n\n` +
-      `You will receive course details and access shortly!`
-    );
+      `You will receive course details and access shortly!`;
+
+    console.log("PAYMENT SUCCESS DATA:", req.body);
+
+    await sendText(phone, text);
 
     return res.status(200).json({ status: "ok" });
 
