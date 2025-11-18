@@ -32,7 +32,8 @@ module.exports = async function startPaymentFlow(phone, courseId) {
 
   const payUrl =
     `https://payment-demo-eta.vercel.app/?order_id=${order.id}` +
-    `&amount=${order.amount}&key=${process.env.RAZORPAY_KEY_ID}`;
+    `&amount=${order.amount}`+ `&key=${process.env.RAZORPAY_KEY_ID}`+
+    `&phone=${phone}`+`&course=${course.id}`;
 
   const text =
     `🧾 *Checkout for ${course.title}*\n\n` +
