@@ -1,33 +1,27 @@
-const email = require("emailjs");
+const { Resend } = require("resend");
 
-const server = email.server.connect({
-  user: process.env.EMAIL_USER,        // your email
-  password: process.env.EMAIL_PASS,    // your email password / app password
-  host: "smtp.gmail.com",              // Gmail SMTP
-  ssl: true
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-function sendPurchaseEmail(to, courseTitle, courseId, price) {
-  const body =
-    `🎉 Your Purchase is Confirmed!\n\n` +
-    `📘 Course: ${courseTitle}\n` +
-    `🆔 Course ID: ${courseId}\n` +
-    `💰 Price Paid: ₹${price}\n\n` +
-    `You will receive course access shortly.\n\n` +
-    `Thank you for choosing Orenna!`;
+async function sendPurchaseEmail(to, courseTitle, courseId, price) {
+  try {
+    const body =
+      `🎉 Your Purchase is Confirmed!\n\n` +
+      `📘 Course: ${courseTitle}\n` +
+      `🆔 Course ID: ${courseId}\n` +
+      `💰 Price Paid: ₹${price}\n\n` +
+      `You will receive course access shortly!\n`;
 
-  server.send({
-    text: body,
-    from: "Orenna Courses <" + process.env.EMAIL_USER + ">",
-    to,
-    subject: `Course Purchase Confirmation – ${courseTitle}`
-  }, (err, msg) => {
-    if (err) {
-      console.error("❌ Email send error:", err);
-    } else {
-      console.log("📧 Email sent:", msg);
-    }
-  });
+    await resend.emails.send({
+      from: process.env.FROM_EMAIL,
+      to,
+      subject: `Course Purchase Confirmation – ${courseTitle}`,
+      text: body,
+    });
+
+    console.log("📧 Email sent via Resend");
+  } catch (error) {
+    console.error("Email error:", error);
+  }
 }
 
 module.exports = { sendPurchaseEmail };
