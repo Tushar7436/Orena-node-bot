@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
       `🧾 *Order ID:* ${order_id}\n` +
       `💳 *Payment ID:* ${payment_id}\n` +
       `💰 *Amount Paid:* ₹${amount / 100}\n\n` +
-      `You will receive course details and access shortly!`;
+      `Please check your mail box`;
 
     await sendText(phone, text);
 
