@@ -78,15 +78,67 @@ async function getCourseById(id) {
    PURCHASE QUERIES
 ---------------------------------------------------------*/
 
-async function createPurchase({ student_id, course_id, payment_id, amount }) {
+// 1. Create pending purchase when generating payment page
+async function createPendingPurchase(student_id, course_id, price, order_id) {
   const res = await pool.query(
-    `INSERT INTO purchases (student_id, course_id, payment_id, amount)
-     VALUES ($1, $2, $3, $4)
+    `INSERT INTO purchases (student_id, course_id, price, payment_status, order_id)
+     VALUES ($1, $2, $3, 'pending', $4)
      RETURNING *`,
-    [student_id, course_id, payment_id, amount]
+    [student_id, course_id, price, order_id]
   );
   return res.rows[0];
 }
+
+// 2. Update purchase after successful payment from frontend
+async function updatePurchaseOnSuccess(order_id, payment_id) {
+  await pool.query(
+    `UPDATE purchases
+     SET payment_id = $1,
+         payment_status = 'completed'
+     WHERE order_id = $2`,
+    [payment_id, order_id]
+  );
+}
+
+// 3. Get purchases for "Your Purchases" button
+async function getUserPurchases(student_id) {
+  const res = await pool.query(`
+    SELECT 
+      purchases.id AS purchase_id,
+      courses.id AS course_id,
+      courses.title,
+      purchases.price,
+      purchases.payment_status,
+      students.name,
+      students.email
+    FROM purchases
+    JOIN courses ON purchases.course_id = courses.id
+    JOIN students ON purchases.student_id = students.id
+    WHERE purchases.student_id = $1 AND payment_status='completed'
+  `, [student_id]);
+
+  return res.rows;
+}
+
+async function getUserPurchasesByOrderId(order_id) {
+  const res = await pool.query(`
+    SELECT 
+      purchases.id AS purchase_id,
+      courses.id AS course_id,
+      courses.title,
+      purchases.price,
+      purchases.payment_status,
+      students.name,
+      students.email
+    FROM purchases
+    JOIN courses ON purchases.course_id = courses.id
+    JOIN students ON purchases.student_id = students.id
+    WHERE purchases.order_id = $1
+  `, [order_id]);
+
+  return res.rows;
+}
+
 
 module.exports = {
   findStudentByPhone,
@@ -96,5 +148,8 @@ module.exports = {
   setRegistrationState,
   getAllCourses,
   getCourseById,
-  createPurchase
+  createPendingPurchase,
+  updatePurchaseOnSuccess,
+  getUserPurchases,
+  getUserPurchasesByOrderId
 };

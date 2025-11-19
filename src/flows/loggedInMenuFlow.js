@@ -37,15 +37,22 @@ module.exports = {
     switch (id) {
 
       case "your_purchase":
-        const purchases = await getUserPurchases(user?.id);
-        if (!purchases || purchases.length === 0) {
+        const purchases = await getUserPurchases(user.id);
+
+        if (!purchases.length) {
           return sendText(phone, "You have not purchased any course yet.");
         }
 
-        return sendText(
-          phone,
-          `Your Purchases:\n${purchases.map(p => "- " + p.name).join("\n")}`
-        );
+        const details = purchases.map(p =>
+          `📘 *${p.title}*\n` +
+          `Course ID: ${p.course_id}\n` +
+          `Student: ${p.name}\n` +
+          `Email: ${p.email}\n` +
+          `Price Paid: ₹${p.price}\n` +
+          `Status: ${p.payment_status}`
+        ).join("\n\n");
+
+        return sendText(phone, details);
 
       case "events":
         return sendText(

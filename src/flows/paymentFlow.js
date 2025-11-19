@@ -1,7 +1,5 @@
-// src/flows/paymentFlow.js
-
 const { sendText } = require("../services/WhatsappApi");
-const { getCourseById } = require("../models/queries");
+const { getCourseById, createPendingPurchase } = require("../models/queries");
 const Razorpay = require("razorpay");
 
 const razor = new Razorpay({
@@ -9,7 +7,7 @@ const razor = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-module.exports = async function startPaymentFlow(phone, courseId) {
+module.exports = async function startPaymentFlow(phone, courseId, user) {
   const course = await getCourseById(courseId);
 
   if (!course) {
@@ -30,10 +28,15 @@ module.exports = async function startPaymentFlow(phone, courseId) {
     return sendText(phone, "Payment service is temporarily unavailable.");
   }
 
+  // Create pending purchase
+  await createPendingPurchase(user.id, courseId, course.price, order.id);
+
   const payUrl =
     `https://payment-demo-eta.vercel.app/?order_id=${order.id}` +
-    `&amount=${order.amount}`+ `&key=${process.env.RAZORPAY_KEY_ID}`+
-    `&phone=${phone}`+`&course=${course.id}`;
+    `&amount=${order.amount}` +
+    `&key=${process.env.RAZORPAY_KEY_ID}` +
+    `&phone=${phone}` +
+    `&course=${course.id}`;
 
   const text =
     `🧾 *Checkout for ${course.title}*\n\n` +
