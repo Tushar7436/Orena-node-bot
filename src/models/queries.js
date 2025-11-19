@@ -46,6 +46,27 @@ async function updateStudentEmail(phone, email) {
   );
 }
 
+// PROFILE UPDATE: Update Name (Uses student.id)
+async function updateProfileName(studentId, name) {
+  await pool.query(
+    `UPDATE students 
+     SET name = $1
+     WHERE id = $2`,
+    [name, studentId]
+  );
+}
+
+// PROFILE UPDATE: Update Email (Uses student.id)
+async function updateProfileEmail(studentId, email) {
+  await pool.query(
+    `UPDATE students 
+     SET email = $1
+     WHERE id = $2`,
+    [email, studentId]
+  );
+}
+
+
 // Update registration state
 async function setRegistrationState(phone, state) {
   await pool.query(
@@ -151,5 +172,7 @@ module.exports = {
   createPendingPurchase,
   updatePurchaseOnSuccess,
   getUserPurchases,
-  getUserPurchasesByOrderId
+  getUserPurchasesByOrderId,
+  updateProfileName,
+  updateProfileEmail
 };

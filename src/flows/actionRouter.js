@@ -7,6 +7,7 @@ const courseFlow = require("./courseFlow");
 const paymentFlow = require("./paymentFlow");
 const { findStudentByPhone } = require("../models/queries");
 const Flow = require("../services/flowState");
+const updateProfileFlow = require("./updateProfileFlow");
 
 module.exports = async function actionRouter(id, phone, session) {
   const user = await findStudentByPhone(phone);
@@ -17,6 +18,12 @@ module.exports = async function actionRouter(id, phone, session) {
   if (id === "browse_courses") return courseFlow.list(phone);
   if (id === "how_we_work") return sendText(phone, "We offer structured modules, live doubt sessions, projects, and certificates.");
   if (id === "pricing") return sendText(phone, "Current Offer: 20% OFF on all courses!");
+
+  if (id === "update_profile") {
+    Flow.set(phone, "start_update_profile");
+    return updateProfileFlow(phone, user, "");
+  }
+
   if (id === "login_signup") {
   Flow.set(phone, "signup_name");
   return sendText(phone, "Let's get started! What's your name?");
