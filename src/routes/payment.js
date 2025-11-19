@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { sendText } = require("../services/WhatsappApi");
-const { updatePurchaseOnSuccess, getUserPurchases } = require("../models/queries");
+const { updatePurchaseOnSuccess, getUserPurchasesByOrderId } = require("../models/queries");
 const { sendPurchaseEmail } = require("../services/emailService");
 
 router.post("/", async (req, res) => {
