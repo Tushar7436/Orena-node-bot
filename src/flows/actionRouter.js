@@ -29,8 +29,11 @@ module.exports = async function actionRouter(id, phone, session) {
     return courseFlow.details(phone, id.split("_")[1]);
 
   // PAYMENT
-  if (id.startsWith("pay_"))
-    return paymentFlow(phone, id.split("_")[1]);
+  if (id.startsWith("pay_")) {
+    const courseId = id.split("_")[1];
+    return paymentFlow(phone, courseId, user);  // ✅ FIXED
+  }
+
 
   // LOGGED-IN USER ACTIONS
   if (user) {
