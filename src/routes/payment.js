@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const { sendText } = require("../services/WhatsappApi");
 const { updatePurchaseOnSuccess, getUserPurchasesByOrderId } = require("../models/queries");
-const { sendPurchaseEmail } = require("../services/emailService");
 
 router.post("/", async (req, res) => {
   try {
@@ -14,14 +13,6 @@ router.post("/", async (req, res) => {
     // Fetch the updated purchase + student + course details
     const purchases = await getUserPurchasesByOrderId(order_id);
     const purchase = purchases[0];
-
-    // Send Email to student
-    sendPurchaseEmail(
-      purchase.email,
-      purchase.title,
-      purchase.course_id,
-      purchase.price
-    );
 
     const text =
       `🎉 *Payment Successful!*\n\n` +

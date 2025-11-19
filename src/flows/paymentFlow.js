@@ -8,11 +8,14 @@ const razor = new Razorpay({
 });
 
 module.exports = async function startPaymentFlow(phone, courseId, user) {
-  const course = await getCourseById(courseId);
 
-  if (!course) {
-    return sendText(phone, "Course not found.");
+  // Safety: user must exist
+  if (!user) {
+    return sendText(phone, "Please complete signup before purchasing.");
   }
+
+  const course = await getCourseById(courseId);
+  if (!course) return sendText(phone, "Course not found.");
 
   const amount = course.price * 100;
 
@@ -28,15 +31,23 @@ module.exports = async function startPaymentFlow(phone, courseId, user) {
     return sendText(phone, "Payment service is temporarily unavailable.");
   }
 
-  // Create pending purchase
-  await createPendingPurchase(user.id, courseId, course.price, order.id);
+  // Create pending purchase in DB
+  await createPendingPurchase(
+    user.id,        // ← students.id
+    courseId,        // ← courses.id
+    course.price,
+    order.id
+  );
 
   const payUrl =
     `https://payment-demo-eta.vercel.app/?order_id=${order.id}` +
     `&amount=${order.amount}` +
     `&key=${process.env.RAZORPAY_KEY_ID}` +
     `&phone=${phone}` +
-    `&course=${course.id}`;
+    `&course=${encodeURIComponent(course.title)}` +
+    `&course_id=${courseId}` +
+    `&price=${course.price}` +
+    `&email=${user.email}`;
 
   const text =
     `🧾 *Checkout for ${course.title}*\n\n` +
