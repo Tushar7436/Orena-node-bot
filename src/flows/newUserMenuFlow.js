@@ -11,7 +11,7 @@ module.exports = {
           { id: "browse_courses", title: "Browse Courses" },
           { id: "how_we_work", title: "How We Work" },
           { id: "pricing", title: "Pricing & Special Offers" },
-          { id: "login_signup", title: "Log In / Sign Up" },
+          { id: "login_signup", title: "Sign Up" },
           { id: "faqs", title: "Help & FAQs" }
         ]
       }

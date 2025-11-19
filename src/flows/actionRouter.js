@@ -29,7 +29,7 @@ module.exports = async function actionRouter(id, phone, session) {
   return sendText(phone, "Let's get started! What's your name?");
   }
   if (id === "faqs")
-    return sendText(phone, "FAQs:\n1. Refund policy\n2. Course duration\n3. Certificate validity");
+    return sendText(phone, "currently we are working on these feature! Stay tunned");
 
   // COURSE DETAILS
   if (id.startsWith("course_"))
