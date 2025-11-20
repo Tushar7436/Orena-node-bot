@@ -3,6 +3,8 @@ const { createStudent, findStudentByPhone } = require("../models/queries");
 const Flow = require("../services/flowState");
 const loggedInMenuFlow = require("./loggedInMenuFlow");
 const axios = require("axios");
+const { sendGmail } = require("../utils/gmail");
+
 
 module.exports = async function signupFlow(phone, text) {
   const state = Flow.get(phone);
@@ -66,15 +68,23 @@ module.exports = async function signupFlow(phone, text) {
       `🎉 *Your account has been created!*\n\nName: ${state.tempName}\nEmail: ${email}`
     );
 
-    // Notify frontend (welcome email)
     try {
-      await axios.get(process.env.FRONTEND_WELCOME_URL, {
-        name: student.name,
-        email: student.email,
-        phone
-      });
+      await sendGmail(
+        student.email,
+        "Welcome to Arena Courses 🎉",
+        `
+          <h2>Hi ${student.name},</h2>
+          <p>Welcome to Arena Courses! Your account has been successfully created.</p>
+
+          <p><strong>Registered Phone:</strong> ${phone}</p>
+          <p><strong>Email:</strong> ${student.email}</p>
+
+          <br/>
+          <p>We're excited to have you onboard! 🚀</p>
+        `
+      );
     } catch (err) {
-      console.error("Error sending welcome message:", err.message);
+      console.error("Error sending welcome email:", err.message);
     }
 
     // Show Logged-in Menu
