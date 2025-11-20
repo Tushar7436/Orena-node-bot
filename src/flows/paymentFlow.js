@@ -40,7 +40,7 @@ module.exports = async function startPaymentFlow(phone, courseId, user) {
   );
 
   const payUrl =
-    `https://payment-demo-eta.vercel.app/?order_id=${order.id}` +
+    `https://payment-demo-eta.vercel.app/razorpay?order_id=${order.id}` +
     `&amount=${order.amount}` +
     `&key=${process.env.RAZORPAY_KEY_ID}` +
     `&phone=${phone}` +

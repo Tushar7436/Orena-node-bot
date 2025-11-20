@@ -16,6 +16,7 @@ module.exports = async function actionRouter(id, phone, session) {
 
   // NEW USER ACTIONS
   if (id === "browse_courses") return courseFlow.list(phone);
+  if (id === "browse_courses_again")  return courseFlow.list(phone); 
   if (id === "how_we_work") return sendText(phone, "We offer structured modules, live doubt sessions, projects, and certificates.");
   if (id === "pricing") return sendText(phone, "Current Offer: 20% OFF on all courses!");
 

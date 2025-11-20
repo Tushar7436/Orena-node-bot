@@ -24,7 +24,7 @@ module.exports = {
     return sendList(
       phone,
       "Your Menu",
-      "Choose an option below",
+      "options below",
       "View Options",
       sections
     );

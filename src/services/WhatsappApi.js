@@ -89,7 +89,7 @@ const sendList = (toPhone, headerText, bodyText, footerText, sections) => {
       body: { text: bodyText },
       footer: footerText ? { text: footerText } : undefined,
       action: {
-        button: "Choose an option",
+        button: "Select an Option",
         sections
       }
     }
