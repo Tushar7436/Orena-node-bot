@@ -15,7 +15,13 @@ oAuth2Client.setCredentials({
 
 export async function sendGmail(to, subject, html) {
   try {
-    const accessToken = await oAuth2Client.getAccessToken();
+    const accessTokenObj = await oAuth2Client.getAccessToken();
+    const accessToken = accessTokenObj?.token;
+
+    if (!accessToken) {
+      console.error("❌ Failed to generate access token. Check refresh token.");
+      return;
+    }
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -25,19 +31,22 @@ export async function sendGmail(to, subject, html) {
         clientId: process.env.GMAIL_CLIENT_ID,
         clientSecret: process.env.GMAIL_CLIENT_SECRET,
         refreshToken: process.env.GMAIL_REFRESH_TOKEN,
-        accessToken: accessToken.token,
+        accessToken,
       },
     });
 
-    await transporter.sendMail({
+    const mailOptions = {
       from: `Arena Courses <${process.env.GMAIL_USER}>`,
       to,
       subject,
       html,
-    });
+    };
 
-    console.log("Email sent to:", to);
+    const result = await transporter.sendMail(mailOptions);
+    console.log(`📧 Email sent to: ${to}`, result.messageId);
+
+    return result;
   } catch (err) {
-    console.error("Error sending email:", err);
+    console.error("❌ Error sending email:", err.message);
   }
 }
