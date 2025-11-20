@@ -1,22 +1,21 @@
-import fs from 'fs';
-import { google } from 'googleapis';
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
+import { google } from "googleapis";
 
-const CREDENTIALS = JSON.parse(fs.readFileSync('./credentials.json'));
-const TOKEN = JSON.parse(fs.readFileSync('./token.json'));
+const OAuth2 = google.auth.OAuth2;
 
-const { client_secret, client_id, redirect_uris } = CREDENTIALS.installed;
-
-const oAuth2Client = new google.auth.OAuth2(
-  client_id,
-  client_secret,
-  redirect_uris[0]
+const oAuth2Client = new OAuth2(
+  process.env.GMAIL_CLIENT_ID,
+  process.env.GMAIL_CLIENT_SECRET,
+  process.env.GMAIL_REDIRECT_URI
 );
 
-oAuth2Client.setCredentials(TOKEN);
+oAuth2Client.setCredentials({
+  refresh_token: process.env.GMAIL_REFRESH_TOKEN,
+});
 
 export async function sendGmail(to, subject, html) {
-  const accessToken = await oAuth2Client.getAccessToken();
+  try {
+    const accessToken = await oAuth2Client.getAccessToken();
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -29,13 +28,16 @@ export async function sendGmail(to, subject, html) {
         accessToken: accessToken.token,
       },
     });
-    
-  const mailOptions = {
-    from: `Your App <YOUR_GMAIL@gmail.com>`,
-    to: to,
-    subject: subject,
-    html: html,
-  };
 
-  return transport.sendMail(mailOptions);
+    await transporter.sendMail({
+      from: `Arena Courses <${process.env.GMAIL_USER}>`,
+      to,
+      subject,
+      html,
+    });
+
+    console.log("Email sent to:", to);
+  } catch (err) {
+    console.error("Error sending email:", err);
+  }
 }
