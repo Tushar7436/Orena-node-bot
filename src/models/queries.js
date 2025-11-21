@@ -14,17 +14,16 @@ async function findStudentByPhone(phone) {
   return res.rows[0];
 }
 
-// Create new student (initial state: WAITING_FOR_NAME)
-async function createStudent ({ phone, name, email })  {
+// Create new student with all fields
+async function createStudent({ phone, name, email, age, gender }) {
   const result = await pool.query(
-    `INSERT INTO students (phone, name, email)
-     VALUES ($1, $2, $3)
+    `INSERT INTO students (phone, name, email, age, gender)
+     VALUES ($1, $2, $3, $4, $5)
      RETURNING *`,
-    [phone, name, email]
+    [phone, name, email, age, gender]
   );
   return result.rows[0];
-};
-
+}
 
 // Update ONLY Name
 async function updateStudentName(phone, name) {

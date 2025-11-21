@@ -1,32 +1,27 @@
-const { sendText } = require("../services/WhatsappApi");
+const { sendText, sendButtons } = require("../services/WhatsappApi");
 const { createStudent, findStudentByPhone } = require("../models/queries");
 const Flow = require("../services/flowState");
 const loggedInMenuFlow = require("./loggedInMenuFlow");
-const axios = require("axios");
-const { sendGmail } = require("../utils/gmail");
-
 
 module.exports = async function signupFlow(phone, text) {
-  const state = Flow.get(phone);
+  const flowData = Flow.get(phone);
+  const currentState = flowData.state;
 
-  /* -------------------------------------------------------
-     🚀 EARLY CHECK — User Already Exists
-  --------------------------------------------------------- */
+  // -------------------------------------------------------
+  // Already exists
+  // -------------------------------------------------------
   const existing = await findStudentByPhone(phone);
   if (existing) {
     await sendText(phone, `👋 You are already logged in as *${existing.name}*.`);
-    
-    // show menu immediately
     await loggedInMenuFlow.sendLoggedInMenu(phone, existing);
-
-    // stop signup flow completely
+    Flow.reset(phone);
     return { handled: true };
   }
 
-  /* -------------------------------------------------------
-     STEP 1 — Ask Name
-  --------------------------------------------------------- */
-  if (state.state === "signup_name") {
+  // -------------------------------------------------------
+  // STEP 1 — NAME
+  // -------------------------------------------------------
+  if (currentState === "signup_name") {
     const name = text.trim();
 
     if (name.length < 2) {
@@ -37,14 +32,14 @@ module.exports = async function signupFlow(phone, text) {
     Flow.setTemp(phone, "tempName", name);
     Flow.set(phone, "signup_email");
 
-    await sendText(phone, `Nice to meet you, ${name} 😊\nWhat's your email?`);
+    await sendText(phone, `Great! Now enter your email address:`);
     return { handled: true };
   }
 
-  /* -------------------------------------------------------
-     STEP 2 — Ask Email
-  --------------------------------------------------------- */
-  if (state.state === "signup_email") {
+  // -------------------------------------------------------
+  // STEP 2 — EMAIL
+  // -------------------------------------------------------
+  if (currentState === "signup_email") {
     const email = text.trim();
 
     const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -53,41 +48,83 @@ module.exports = async function signupFlow(phone, text) {
       return { handled: true };
     }
 
-    // Create Student in DB
-    const student = await createStudent({
-      phone,
-      name: state.tempName,
-      email
-    });
+    Flow.setTemp(phone, "tempEmail", email);
+    Flow.set(phone, "signup_age");
 
-    // Reset flow state
-    Flow.set(phone, "none");
+    await sendText(phone, `Awesome! Please tell me your age:`);
+    return { handled: true };
+  }
+
+  // -------------------------------------------------------
+  // STEP 3 — AGE
+  // -------------------------------------------------------
+  if (currentState === "signup_age") {
+    const age = parseInt(text.trim());
+
+    if (isNaN(age) || age < 8 || age > 90) {
+      await sendText(phone, "Please enter a valid age.");
+      return { handled: true };
+    }
+
+    Flow.setTemp(phone, "tempAge", age);
+    Flow.set(phone, "signup_gender");
+
+    await sendButtons(
+      phone,
+      "Select Gender",
+      [
+        { id: "gender_male", title: "Male" },
+        { id: "gender_female", title: "Female" },
+        { id: "gender_other", title: "Other" }
+      ],
+      "Choose your gender:"
+    );
+    
+    return { handled: true };
+  }
+
+  // -------------------------------------------------------
+  // STEP 4 — GENDER (BUTTON)
+  // -------------------------------------------------------
+  if (currentState === "signup_gender") {
+    let gender = null;
+
+    if (text === "gender_male") gender = "Male";
+    else if (text === "gender_female") gender = "Female";
+    else if (text === "gender_other") gender = "Other";
+    else {
+      await sendText(phone, "Please choose a gender from the buttons.");
+      return { handled: true };
+    }
+
+    // Validate all data exists
+    if (!flowData.tempName || !flowData.tempEmail || !flowData.tempAge) {
+      await sendText(phone, "❌ Something went wrong. Please start again by typing 'signup'.");
+      Flow.reset(phone);
+      return { handled: true };
+    }
+
+    const studentData = {
+      phone,
+      name: flowData.tempName,
+      email: flowData.tempEmail,
+      age: flowData.tempAge,
+      gender
+    };
+
+    const student = await createStudent(studentData);
+
+    Flow.reset(phone);
 
     await sendText(
       phone,
-      `🎉 *Your account has been created!*\n\nName: ${state.tempName}\nEmail: ${email}`
+      `🎉 *Signup Complete!*\n\n` +
+      `👤 Name: ${student.name}\n` +
+      `📩 Email: ${student.email}\n` +
+      `🎂 Age: ${student.age}\n` +
+      `🚻 Gender: ${student.gender}`
     );
 
-    // try {
-    //   await sendGmail(
-    //     student.email,
-    //     "Welcome to Orena Courses 🎉",
-    //     `
-    //       <h2>Hi ${student.name},</h2>
-    //       <p>Welcome to Orena Courses! Your account has been successfully created.</p>
-
-    //       <p><strong>Registered Phone:</strong> ${phone}</p>
-    //       <p><strong>Email:</strong> ${student.email}</p>
-
-    //       <br/>
-    //       <p>We're excited to have you onboard! 🚀</p>
-    //     `
-    //   );
-    // } catch (err) {
-    //   console.error("Error sending welcome email:", err.message);
-    // }
-
-    // Show Logged-in Menu
     await loggedInMenuFlow.sendLoggedInMenu(phone, student);
 
     return { handled: true };

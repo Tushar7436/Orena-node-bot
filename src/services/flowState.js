@@ -21,5 +21,16 @@ module.exports = {
       flowState[phone] = {};
     }
     flowState[phone][key] = value;
+  },
+
+  clearTemp(phone) {
+    if (!flowState[phone]) return;
+    
+    const { state } = flowState[phone];
+    flowState[phone] = { state }; // Keep only the state
+  },
+
+  reset(phone) {
+    flowState[phone] = { state: "none" };
   }
 };
