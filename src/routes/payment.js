@@ -17,10 +17,12 @@ router.post("/", async (req, res) => {
 
     // Update DB
     await updatePurchaseOnSuccess(order_id, payment_id);
+    console.log("✅ Database updated");
 
     // Fetch updated purchase details
     const purchases = await getUserPurchasesByOrderId(order_id);
     const purchase = purchases?.[0];
+    console.log("📦 Purchase details:", purchase);
 
     // WhatsApp success message + BUTTON
     const text =
@@ -36,13 +38,23 @@ router.post("/", async (req, res) => {
       { id: "exit_flow", title: "🚪 Exit" }  
     ];
 
-    await sendButtons(phone, "Payment Confirmed!", buttons, text);
+    console.log("📱 Attempting to send WhatsApp message to:", phone);
+    
+    // Send WhatsApp message
+    const whatsappResult = await sendButtons(phone, "Payment Confirmed!", buttons, text);
+    console.log("✅ WhatsApp message sent:", whatsappResult);
 
-    return res.status(200).json({ status: "ok" });
+    return res.status(200).json({ 
+      status: "ok",
+      whatsapp_sent: true 
+    });
 
   } catch (err) {
     console.error("❌ Payment success error:", err);
-    return res.status(500).json({ error: "Failed to process payment" });
+    return res.status(500).json({ 
+      error: "Failed to process payment",
+      details: err.message 
+    });
   }
 });
 
