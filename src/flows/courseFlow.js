@@ -2,6 +2,7 @@
 
 const { sendList, sendButtons, sendText } = require("../services/WhatsappApi");
 const { getAllCourses, getCourseById } = require("../models/queries");
+const { findStudentByPhone } = require("../models/queries");
 
 module.exports = {
 
@@ -43,12 +44,21 @@ module.exports = {
       return sendText(phone, "Course not found.");
     }
 
+    // Check if user exists in DB
+    const user = await findStudentByPhone(phone);
+
     const buttons = [
       { id: `pay_${course.id}`, title: "Pay Now" },
       { id: "browse_courses_again", title: "Browse Other Courses" } // 👈 NEW BUTTON
     ];
-
-    const info =
+    
+    // Add correct Options button
+      if (user) {
+        buttons.push({ id: "options_loggedin", title: "Options" });
+      } else {
+        buttons.push({ id: "options_newuser", title: "Options" });
+      }
+      const info =
       `📘 *${course.title}*\n\n` +
       `${course.description}\n\n` +
       `Duration: ${course.duration || "Self-paced"}\n` +

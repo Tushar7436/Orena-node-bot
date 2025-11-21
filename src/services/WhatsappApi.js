@@ -4,7 +4,7 @@ const axios = require('axios');
 
 const PHONE_ID = process.env.WHATSAPP_PHONE_ID;
 const TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
-const API_URL = process.env.WHATSAPP_API_URL || 'https://graph.facebook.com/v24.0';
+const API_URL = process.env.WHATSAPP_API_URL || 'https://graph.facebook.com/v22.0';
 
 if (!PHONE_ID || !TOKEN) {
   console.warn("⚠️ Missing WhatsApp credentials");

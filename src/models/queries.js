@@ -159,6 +159,20 @@ async function getUserPurchasesByOrderId(order_id) {
 
   return res.rows;
 }
+async function userAlreadyPurchased(studentId, courseId) {
+  const result = await pool.query(
+    `SELECT id 
+       FROM purchases
+      WHERE student_id = $1
+        AND course_id = $2
+        AND payment_status = 'completed'`,
+    [studentId, courseId]
+  );
+
+  // node-postgres returns rows array
+  return result.rows.length > 0 ? result.rows[0] : null;
+}
+
 
 
 module.exports = {
@@ -174,5 +188,6 @@ module.exports = {
   getUserPurchases,
   getUserPurchasesByOrderId,
   updateProfileName,
-  updateProfileEmail
+  updateProfileEmail,
+  userAlreadyPurchased
 };

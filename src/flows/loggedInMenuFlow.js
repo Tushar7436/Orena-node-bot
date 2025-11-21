@@ -4,70 +4,106 @@ const { sendList, sendText } = require("../services/WhatsappApi");
 const { getUserPurchases } = require("../models/queries");
 
 module.exports = {
-  
-  // ───────────────────────────────
-  // Logged-in Menu (NOW A LIST)
-  // ───────────────────────────────
-  async sendLoggedInMenu(phone, user) {
+
+  // ---------------------------------------------------------
+  // LOGGED-IN MENU – accepts dynamic body text
+  // ---------------------------------------------------------
+  async sendLoggedInMenu(phone, user, bodyText = "Choose an option below:") {
+
     const sections = [
       {
-        title: `Welcome Student`,
+        title: `👋 Welcome Back, ${user.name}`,
         rows: [
-          { id: "browse_courses", title: "Browse Courses" },
-          { id: "your_purchase", title: "Your Purchases" },
-          { id: "events", title: "Upcoming events" },
-          { id: "update_profile", title: "Update Profile" }
+          {
+            id: "browse_courses",
+            title: "📚 Browse Courses",
+            description: "View available courses & explore details."
+          },
+          {
+            id: "your_purchase",
+            title: "🎟️ Your Purchases",
+            description: "See all courses you’ve enrolled in."
+          },
+          {
+            id: "events",
+            title: "📢 Upcoming Events",
+            description: "Workshops, live sessions & webinars."
+          },
+          {
+            id: "update_profile",
+            title: "👤 Update Profile",
+            description: "Edit your name, email, age or gender."
+          }
         ]
       }
     ];
 
     return sendList(
       phone,
-      "Your Menu",
-      "options below",
+      "Your Dashboard",
+      bodyText,        // <<< DYNAMIC BODY TEXT
       "View Options",
       sections
     );
   },
 
-  // ───────────────────────────────
-  // Logged-in Actions
-  // ───────────────────────────────
+  // ---------------------------------------------------------
+  // LOGGED-IN ACTION HANDLER
+  // ---------------------------------------------------------
   async handle(id, phone, user) {
+
     switch (id) {
 
+      // -----------------------------------------------------
+      // PURCHASES
+      // -----------------------------------------------------
       case "your_purchase":
         const purchases = await getUserPurchases(user.id);
 
         if (!purchases.length) {
-          return sendText(phone, "You have not purchased any course yet.");
+          await sendText(phone, "You haven’t purchased any course yet.");
+          return this.sendLoggedInMenu(phone, user, "What do you want to explore next?");
         }
 
         const details = purchases.map(p =>
           `📘 *${p.title}*\n` +
-          `Course ID: ${p.course_id}\n` +
-          `Student: ${p.name}\n` +
-          `Email: ${p.email}\n` +
-          `Price Paid: ₹${p.price}\n` +
-          `Status: ${p.payment_status}`
+          `🆔 Course ID: ${p.course_id}\n` +
+          `👤 Name: ${p.name}\n` +
+          `📩 Email: ${p.email}\n` +
+          `💵 Price: ₹${p.price}\n` +
+          `📌 Status: ${p.payment_status}`
         ).join("\n\n");
 
-        return sendText(phone, details);
+        await sendText(phone, details);
+        return this.sendLoggedInMenu(phone, user, "Here are more things you can do:");
 
+      // -----------------------------------------------------
+      // EVENTS
+      // -----------------------------------------------------
       case "events":
-        return sendText(
+        await sendText(
           phone,
-          "there are no available events right now. please try again later"
+          "📢 There are no upcoming events right now.\nStay tuned!"
         );
+        return this.sendLoggedInMenu(phone, user, "Check other options below:");
 
+      // -----------------------------------------------------
+      // UPDATE PROFILE
+      // -----------------------------------------------------
       case "update_profile":
-        return sendText(phone, "Send your updated name or email to update profile.");
+        await sendText(
+          phone,
+          "To update your profile, reply with your new Name, Email, Age or Gender."
+        );
+        return this.sendLoggedInMenu(phone, user, "Continue updating or choose an option:");
 
-      // NEW OPTION — Browse Courses → handled by courseFlow
+      // -----------------------------------------------------
+      // FORWARD BROWSE COURSES HANDLING TO actionRouter
+      // -----------------------------------------------------
       case "browse_courses":
-        return null;  // actionRouter will forward this to courseFlow
+        return null;
     }
 
-    return null; // not handled here
+    return null;
   }
 };

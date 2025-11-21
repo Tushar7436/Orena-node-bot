@@ -68,24 +68,24 @@ module.exports = async function signupFlow(phone, text) {
       `🎉 *Your account has been created!*\n\nName: ${state.tempName}\nEmail: ${email}`
     );
 
-    try {
-      await sendGmail(
-        student.email,
-        "Welcome to Arena Courses 🎉",
-        `
-          <h2>Hi ${student.name},</h2>
-          <p>Welcome to Arena Courses! Your account has been successfully created.</p>
+    // try {
+    //   await sendGmail(
+    //     student.email,
+    //     "Welcome to Orena Courses 🎉",
+    //     `
+    //       <h2>Hi ${student.name},</h2>
+    //       <p>Welcome to Orena Courses! Your account has been successfully created.</p>
 
-          <p><strong>Registered Phone:</strong> ${phone}</p>
-          <p><strong>Email:</strong> ${student.email}</p>
+    //       <p><strong>Registered Phone:</strong> ${phone}</p>
+    //       <p><strong>Email:</strong> ${student.email}</p>
 
-          <br/>
-          <p>We're excited to have you onboard! 🚀</p>
-        `
-      );
-    } catch (err) {
-      console.error("Error sending welcome email:", err.message);
-    }
+    //       <br/>
+    //       <p>We're excited to have you onboard! 🚀</p>
+    //     `
+    //   );
+    // } catch (err) {
+    //   console.error("Error sending welcome email:", err.message);
+    // }
 
     // Show Logged-in Menu
     await loggedInMenuFlow.sendLoggedInMenu(phone, student);

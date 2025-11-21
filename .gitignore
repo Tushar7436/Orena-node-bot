@@ -6,3 +6,5 @@ node_modules/
 
 # Database migrations (adjust as needed)
 migrations/
+credentials.json
+token.json
