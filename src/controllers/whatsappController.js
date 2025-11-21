@@ -24,9 +24,26 @@ exports.handleWebhook = async (req, res) => {
 
   const session = await getOrCreateSession(phone);
   const user = await findStudentByPhone(phone);
+  const state = Flow.get(phone)?.state;
 
   // ─────────────────────────────────────
-  // 1. Handle INTERACTIVE BUTTON / LIST
+  // SIGNUP FLOW
+  // ─────────────────────────────────────
+  if (state && state.startsWith("signup_")) {
+    // Handle gender button selection
+    if (state === "signup_gender" && type === "interactive") {
+      const id = message.interactive?.button_reply?.id;
+      await signupFlow(phone, id);
+      return;
+    }
+
+    // Handle text inputs (name, email, age)
+    const result = await signupFlow(phone, textBody);
+    if (result?.handled) return;
+  }
+
+  // ─────────────────────────────────────
+  // INTERACTIVE BUTTONS / LISTS
   // ─────────────────────────────────────
   if (type === "interactive") {
     const id =
@@ -37,7 +54,7 @@ exports.handleWebhook = async (req, res) => {
   }
 
   // ─────────────────────────────────────
-  // 2. Greeting Flow
+  // GREETING FLOW
   // ─────────────────────────────────────
   const lower = textBody.toLowerCase();
   if (["hi", "hello", "hey"].includes(lower)) {
@@ -45,22 +62,14 @@ exports.handleWebhook = async (req, res) => {
   }
 
   // ─────────────────────────────────────
-  // 3. SIGNUP FLOW
+  // UPDATE PROFILE FLOW
   // ─────────────────────────────────────
-  const signupResult = await signupFlow(phone, textBody);
-  if (signupResult?.handled) return;
-
-  // ─────────────────────────────────────
-  // 4. UPDATE PROFILE FLOW
-  // ─────────────────────────────────────
-  const state = Flow.get(phone)?.state;
-
   if (state && state.startsWith("update_profile")) {
     return updateProfileFlow(phone, user, textBody);
   }
 
   // ─────────────────────────────────────
-  // 5. AI FALLBACK (Python backend or Gemini)
+  // AI FALLBACK
   // ─────────────────────────────────────
   return aiFallback(phone, textBody, session);
 };

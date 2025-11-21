@@ -6,20 +6,12 @@ const newUserMenuFlow = require("./newUserMenuFlow");
 const courseFlow = require("./courseFlow");
 const paymentFlow = require("./paymentFlow");
 const updateProfileFlow = require("./updateProfileFlow");
-const signupFlow = require("./signupFlow");
 const Flow = require("../services/flowState");
 const { findStudentByPhone } = require("../models/queries");
 
 module.exports = async function actionRouter(id, phone, session) {
 
   const state = Flow.get(phone)?.state;
-
-
-  // OVERRIDE: SIGNUP FLOW ALWAYS RUNS FIRST
-  if (state && state.startsWith("signup_")) {
-    return signupFlow(phone, id);     
-  }
-
   const user = await findStudentByPhone(phone);
 
   console.log("ACTION RECEIVED:", id);
