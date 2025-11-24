@@ -49,7 +49,7 @@ module.exports = {
 
     const buttons = [
       { id: `pay_${course.id}`, title: "Pay Now" },
-      { id: "browse_courses_again", title: "Browse Other Courses" } // 👈 NEW BUTTON
+      { id: "browse_courses_again", title: "Browse Other Courses" } 
     ];
     
     // Add correct Options button

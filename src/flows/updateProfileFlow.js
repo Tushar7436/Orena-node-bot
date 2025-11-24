@@ -1,6 +1,6 @@
 // src/flows/updateProfileFlow.js
 
-const { sendText } = require("../services/WhatsappApi");
+const { sendText, sendButtons } = require("../services/WhatsappApi");
 const { updateProfileName, updateProfileEmail } = require("../models/queries");
 const flowState = require("../services/flowState");
 
@@ -24,7 +24,7 @@ module.exports = async function updateProfileFlow(phone, user, messageText) {
   // STEP 2 → User chooses what to update
   if (state === "update_profile_choice") {
     if (msg === "name") {
-      await sendText(phone, "Great! Please send your new name.");
+      await sendText(phone, "Great! Please tell us your new name.");
       flowState.set(phone, "update_profile_name");
       return;
     }
@@ -45,7 +45,17 @@ module.exports = async function updateProfileFlow(phone, user, messageText) {
     }
 
     await updateProfileName(user.id, messageText.trim());
-    await sendText(phone, `Your name has been updated to *${messageText.trim()}* 🎉`);
+
+    await sendButtons(
+      phone,
+      "Profile Updated",
+      [
+        { id: "options_loggedin", title: "Main menu" },
+        { id: "browse_courses", title: "Explore Courses" },
+      ],
+      `Your name has been updated to *${messageText.trim()}* 🎉`,
+      ""
+    );
 
     flowState.set(phone, "none");
     return;
@@ -54,14 +64,21 @@ module.exports = async function updateProfileFlow(phone, user, messageText) {
   // STEP 3B → Update Email
   if (state === "update_profile_email") {
     if (!emailRegex.test(messageText.trim())) {
-      return sendText(
-        phone,
-        "Invalid email format.\nExample: user@example.com"
-      );
+      return sendText(phone, "Invalid email format.\nExample: user@example.com");
     }
 
     await updateProfileEmail(user.id, messageText.trim());
-    await sendText(phone, `Your email has been updated to *${messageText.trim()}* 📧`);
+
+    await sendButtons(
+      phone,
+      "Profile Updated",
+      [
+        { id: "options_loggedin", title: "Main menu" },
+        { id: "browse_courses", title: "Explore Courses" },
+      ],
+      `Your email has been updated to *${messageText.trim()}* 📧`,
+      ""
+    );
 
     flowState.set(phone, "none");
     return;

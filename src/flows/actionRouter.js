@@ -60,7 +60,7 @@ module.exports = async function actionRouter(id, phone, session) {
 
     return sendText(
       phone,
-      "Thank you for using Orena! Your session has ended.\n\n" +
+      "Thank you for using Orena Whatsapp bot! the session has ended.\n\n" +
       "You can type *Hi* anytime to restart."
     );
   }

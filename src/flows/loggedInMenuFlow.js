@@ -1,6 +1,6 @@
 // src/flows/loggedInMenuFlow.js
 
-const { sendList, sendText } = require("../services/WhatsappApi");
+const { sendList, sendText, sendButtons } = require("../services/WhatsappApi");
 const { getUserPurchases } = require("../models/queries");
 
 module.exports = {
@@ -32,7 +32,12 @@ module.exports = {
           {
             id: "update_profile",
             title: "👤 Update Profile",
-            description: "Edit your name, email, age or gender."
+            description: "Edit your name and email."
+          },
+          {
+            id: "exit_flow",
+            title: "🚪 Exit",
+            description: "End the current session"
           }
         ]
       }
@@ -74,8 +79,16 @@ module.exports = {
           `📌 Status: ${p.payment_status}`
         ).join("\n\n");
 
-        await sendText(phone, details);
-        return this.sendLoggedInMenu(phone, user, "Here are more things you can do:");
+        return await sendButtons(
+          phone,
+          "Your Courses",
+          [
+            { id: "options_loggedin", title: "Main menu" },
+            { id: "browse_courses", title: "Explore Courses" },
+          ],
+          `${details}`,
+          ""
+        );
 
       // -----------------------------------------------------
       // EVENTS
