@@ -1,6 +1,6 @@
 // src/flows/newUserMenuFlow.js
 
-const { sendList, sendText } = require("../services/WhatsappApi");
+const { sendList, sendText,sendButtons } = require("../services/WhatsappApi");
 const courseFlow = require("./courseFlow");
 const Flow = require("../services/flowState");
 
@@ -65,29 +65,37 @@ module.exports = {
     // HOW WE WORK → SEND INFO + SHOW MENU AGAIN
     // ─────────────────────────────────────────────
     if (id === "how_we_work") {
-      await sendText(
-        phone,
-        "At Orena, we follow a practical-first learning model:\n\n" +
+      return await sendButtons(
+          phone,
+          "How we work",
+          [
+            { id: "options_newuser", title: "Main menu" },
+            { id: "browse_courses", title: "Explore Courses" },
+          ],
+        "At Orena, we follow a practical-first learning model:\n" +
         "• Structured modules\n" +
         "• Weekly mentorship\n" +
         "• Live doubt sessions\n" +
         "• Project-based learning\n" +
-        "• Certificates upon completion"
-      );
-
-      return this.sendNewUserMenu(phone);
+        "• Certificates upon completion",
+        "select below"
+        );
     }
 
     // ─────────────────────────────────────────────
     // PRICING → SEND INFO + SHOW MENU AGAIN
     // ─────────────────────────────────────────────
     if (id === "pricing") {
-      await sendText(
-        phone,
-        "💰 *Current Offer:* Get *20% OFF* on all courses!\nLimited-time only 🎉"
-      );
-
-      return this.sendNewUserMenu(phone);
+      return await sendButtons(
+          phone,
+          "pricing and Offers",
+          [
+            { id: "options_newuser", title: "Main menu" },
+            { id: "browse_courses", title: "Explore Courses" },
+          ],
+          "💰 *Current Offer:* Get *20% OFF* on all courses!\nLimited-time only 🎉",
+          "select below"
+        );
     }
 
     // ─────────────────────────────────────────────
@@ -102,12 +110,16 @@ module.exports = {
     // FAQ → SEND INFO + SHOW MENU AGAIN
     // ─────────────────────────────────────────────
     if (id === "faqs") {
-      await sendText(
-        phone,
-        "❓ *FAQs are being updated.*\nPlease check back soon! 😊"
-      );
-
-      return this.sendNewUserMenu(phone);
+      return await sendButtons(
+          phone,
+          "Faqs",
+          [
+            { id: "options_newuser", title: "Main menu" },
+            { id: "browse_courses", title: "Explore Courses" },
+          ],
+          "❓*FAQs are being updated.*\nPlease check back soon! 😊",
+          "select below"
+        );
     }
 
     return sendText(phone, "Please pick an option from the menu.");
